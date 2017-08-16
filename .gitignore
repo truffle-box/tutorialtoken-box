@@ -1,0 +1,7 @@
+node_modules
+build
+build_webpack
+npm-debug.log
+.env
+.DS_Store
+.truffle-solidity-loader
