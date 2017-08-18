@@ -46,7 +46,7 @@ App = {
     var amount = parseInt($('#TTTransferAmount').val());
     var toAddress = $('#TTTransferAddress').val();
 
-    console.log('Transfering ' + amount + ' TT to ' + toAddress);
+    console.log('Transferring ' + amount + ' TT to ' + toAddress);
 
     var tutorialTokenInstance;
 
@@ -57,10 +57,10 @@ App = {
 
       var account = accounts[0];
 
-      // user cannot transfer tokens to himself
+      // cannot transfer tokens to ownself
       if (toAddress.toLowerCase() == account.toLowerCase()) {
-        alert('Sorry, you cannot transfer token to yourself');
-        throw new Error('cannot transfer token to yourself');
+        alert('Sorry, you cannot transfer tokens nto yourself');
+        throw new Error('Sorry, you cannot transfer tokens to yourself');
       }
 
       App.contracts.TutorialToken.deployed().then(function(instance) {
