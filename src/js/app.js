@@ -59,7 +59,7 @@ App = {
 
       // cannot transfer tokens to ownself
       if (toAddress.toLowerCase() == account.toLowerCase()) {
-        alert('Sorry, you cannot transfer tokens nto yourself');
+        alert('Sorry, you cannot transfer tokens to yourself');
         throw new Error('Sorry, you cannot transfer tokens to yourself');
       }
 
