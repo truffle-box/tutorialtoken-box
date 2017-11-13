@@ -40,7 +40,7 @@ App = {
     $(document).on('click', '#transferButton', App.handleTransfer);
   },
 
-  handleTransfer: function() {
+  handleTransfer: function(event) {
     event.preventDefault();
 
     var amount = parseInt($('#TTTransferAmount').val());
