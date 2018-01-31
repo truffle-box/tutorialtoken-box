@@ -70,7 +70,7 @@ App = {
     });
   },
 
-  getBalances: function(adopters, account) {
+  getBalances: function() {
     console.log('Getting balances...');
 
     var tutorialTokenInstance;
