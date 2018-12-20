@@ -29,7 +29,7 @@ App = {
       // Set the provider for our contract.
       App.contracts.TutorialToken.setProvider(App.web3Provider);
 
-      // Use our contract to retieve and mark the adopted pets.
+      // Get My Balance
       return App.getBalances();
     });
 
@@ -46,7 +46,7 @@ App = {
     var amount = parseInt($('#TTTransferAmount').val());
     var toAddress = $('#TTTransferAddress').val();
 
-    console.log('Transfer ' + amount + ' TT to ' + toAddress);
+    console.log('Transferring ' + amount + ' TT to ' + toAddress);
 
     var tutorialTokenInstance;
 
@@ -57,12 +57,22 @@ App = {
 
       var account = accounts[0];
 
+      // cannot transfer tokens to ownself
+      if (toAddress.toLowerCase() == account.toLowerCase()) {
+        alert('Sorry, you cannot transfer tokens to yourself');
+        throw new Error('Sorry, you cannot transfer tokens to yourself');
+      }
+
       App.contracts.TutorialToken.deployed().then(function(instance) {
         tutorialTokenInstance = instance;
 
         return tutorialTokenInstance.transfer(toAddress, amount, {from: account, gas: 100000});
       }).then(function(result) {
         alert('Transfer Successful!');
+        // clean up input boxes
+        $('#TTTransferAmount').val('');
+        $('#TTTransferAddress').val('');
+
         return App.getBalances();
       }).catch(function(err) {
         console.log(err.message);
