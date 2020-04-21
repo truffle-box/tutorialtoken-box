@@ -2,26 +2,39 @@ App = {
   web3Provider: null,
   contracts: {},
 
-  init: function() {
+  init: async function () {
     return App.initWeb3();
   },
 
-  initWeb3: function() {
+  initWeb3: async function () {
     // Initialize web3 and set the provider to the testRPC.
-    if (typeof web3 !== 'undefined') {
-      App.web3Provider = web3.currentProvider;
-      web3 = new Web3(web3.currentProvider);
-    } else {
-      // set the provider you want from Web3.providers
-      App.web3Provider = new Web3.providers.HttpProvider('http://127.0.0.1:9545');
-      web3 = new Web3(App.web3Provider);
+    if (window.ethereum) {
+      App.web3Provider = window.ethereum;
+      try {
+        // Request account access
+        await window.ethereum.enable();
+      } catch (error) {
+        // User denied account access...
+        console.error("User denied account access");
+      }
     }
+    // Legacy dapp browsers...
+    else if (window.web3) {
+      App.web3Provider = window.web3.currentProvider;
+    }
+    // If no injected web3 instance is detected, fall back to Ganache
+    else {
+      App.web3Provider = new Web3.providers.HttpProvider(
+        "http://localhost:7545"
+      );
+    }
+    web3 = new Web3(App.web3Provider);
 
     return App.initContract();
   },
 
-  initContract: function() {
-    $.getJSON('TutorialToken.json', function(data) {
+  initContract: function () {
+    $.getJSON("TutorialToken.json", function (data) {
       // Get the necessary contract artifact file and instantiate it with truffle-contract.
       var TutorialTokenArtifact = data;
       App.contracts.TutorialToken = TruffleContract(TutorialTokenArtifact);
@@ -36,70 +49,78 @@ App = {
     return App.bindEvents();
   },
 
-  bindEvents: function() {
-    $(document).on('click', '#transferButton', App.handleTransfer);
+  bindEvents: function () {
+    $(document).on("click", "#transferButton", App.handleTransfer);
   },
 
-  handleTransfer: function(event) {
+  handleTransfer: function (event) {
     event.preventDefault();
 
-    var amount = parseInt($('#TTTransferAmount').val());
-    var toAddress = $('#TTTransferAddress').val();
+    var amount = parseInt($("#TTTransferAmount").val());
+    var toAddress = $("#TTTransferAddress").val();
 
-    console.log('Transfer ' + amount + ' TT to ' + toAddress);
+    console.log("Transfer " + amount + " TT to " + toAddress);
 
     var tutorialTokenInstance;
 
-    web3.eth.getAccounts(function(error, accounts) {
+    web3.eth.getAccounts(function (error, accounts) {
       if (error) {
         console.log(error);
       }
 
       var account = accounts[0];
 
-      App.contracts.TutorialToken.deployed().then(function(instance) {
-        tutorialTokenInstance = instance;
+      App.contracts.TutorialToken.deployed()
+        .then(function (instance) {
+          tutorialTokenInstance = instance;
 
-        return tutorialTokenInstance.transfer(toAddress, amount, {from: account, gas: 100000});
-      }).then(function(result) {
-        alert('Transfer Successful!');
-        return App.getBalances();
-      }).catch(function(err) {
-        console.log(err.message);
-      });
+          return tutorialTokenInstance.transfer(toAddress, amount, {
+            from: account,
+            gas: 100000,
+          });
+        })
+        .then(function (result) {
+          alert("Transfer Successful!");
+          return App.getBalances();
+        })
+        .catch(function (err) {
+          console.log(err.message);
+        });
     });
   },
 
-  getBalances: function() {
-    console.log('Getting balances...');
+  getBalances: function () {
+    console.log("Getting balances...");
 
     var tutorialTokenInstance;
 
-    web3.eth.getAccounts(function(error, accounts) {
+    web3.eth.getAccounts(function (error, accounts) {
       if (error) {
         console.log(error);
       }
 
       var account = accounts[0];
 
-      App.contracts.TutorialToken.deployed().then(function(instance) {
-        tutorialTokenInstance = instance;
+      App.contracts.TutorialToken.deployed()
+        .then(function (instance) {
+          tutorialTokenInstance = instance;
 
-        return tutorialTokenInstance.balanceOf(account);
-      }).then(function(result) {
-        balance = result.c[0];
+          return tutorialTokenInstance.balanceOf(account);
+        })
+        .then(function (result) {
+          balance = result.c[0];
 
-        $('#TTBalance').text(balance);
-      }).catch(function(err) {
-        console.log(err.message);
-      });
+          $("#TTBalance").text(balance);
+        })
+        .catch(function (err) {
+          console.log(err.message);
+        });
     });
-  }
-
+  },
 };
 
-$(function() {
-  $(window).load(function() {
+$(function () {
+  $(window).load(function () {
     App.init();
   });
 });
