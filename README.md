@@ -1,6 +1,6 @@
 # TutorialToken Truffle Box
 
-This box has all you need to get started with our [Open Zeppelin (TutorialToken) tutorial](http://truffleframework.com/tutorials/robust-smart-contracts-with-openzeppelin).
+This box has all you need to get started with our [Open Zeppelin (TutorialToken) tutorial](https://trufflesuite.com/guides/robust-smart-contracts-with-openzeppelin/).
 
 ## Installation
 
